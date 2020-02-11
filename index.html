@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Coding</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="ive Coding, un éditeur en ligne pour faire des séances de Live Coding">
+    <meta name="author" content="Dimitri ONGOUA">
+    <link rel="icon" type="image/png" href="fav.png" sizes="32x32">
+    <meta property="og:title" content="Live Coding" />
+    <meta property="og:url" content="https://mendoc.github.io/livecoding/" />
+    <meta property="og:description" content="ive Coding, un éditeur en ligne pour faire des séances de Live Coding" />
+    <meta property="og:image" content="http://mende.alwaysdata.net/helpor/fav.png" />
+    <style type="text/css" media="screen">
+        body {
+            overflow: hidden;
+        }
+        #editor {
+            margin: 0;
+            position: absolute;
+            top :0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 1.8em;
+        }
+    </style>
+</head>
+<body>
+    <pre id="editor"></pre>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-firestore.js"></script>
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyA-CI4WfGwW4M48MvQSTwO8oz3Njp8mGXw",
+        authDomain: "fir-test-146e0.firebaseapp.com",
+        databaseURL: "https://fir-test-146e0.firebaseio.com",
+        projectId: "fir-test-146e0",
+        storageBucket: "fir-test-146e0.appspot.com",
+        messagingSenderId: "947379455789",
+        appId: "1:947379455789:web:f01a35d3adf5f5e01235a4"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://pagecdn.io/lib/ace/1.4.8/theme-ambiance.min.js" crossorigin="anonymous"></script>
+	<script>
+		function b64_to_utf8( str ) {
+		    return decodeURIComponent(escape(window.atob( str )));
+		}
+	</script>
+    <script>
+        var editor = ace.edit("editor");
+        // editor.setTheme("ace/theme/ambiance");
+        editor.getSession().setUseWorker(false);
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/html");
+        editor.setReadOnly(true);
+        
+        let db = firebase.firestore();
+        db.collection("coding").doc("snippet")
+        .onSnapshot(function(res) {
+            let snippet = res.data()
+            editor.setValue(b64_to_utf8(snippet.code))
+        });
+    </script>
+</body>
+</html>
