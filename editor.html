@@ -68,7 +68,8 @@
         editor.session.on('change', function(delta) {
             let data = {
                 code: utf8_to_b64(editor.getValue()),
-                mode: "ace/mode/html"
+                mode: "ace/mode/html",
+                cursor: editor.getCursorPosition()
             }
             updateSnippet(data)
         });
