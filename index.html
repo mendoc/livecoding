@@ -5,12 +5,12 @@
     <title>Live Coding</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="ive Coding, un éditeur en ligne pour faire des séances de Live Coding">
+    <meta name="description" content="Un éditeur en ligne pour faire des séances de Live Coding">
     <meta name="author" content="Dimitri ONGOUA">
     <link rel="icon" type="image/png" href="https://trello-attachments.s3.amazonaws.com/5e20781f037cc18ba5bd3db7/104x131/7506b034ff68a0de1ac5334e5a7b0c9f/logo-okacode-lite-1.png" sizes="32x32">
     <meta property="og:title" content="Live Coding" />
     <meta property="og:url" content="https://mendoc.github.io/livecoding" />
-    <meta property="og:description" content="Live Coding, un éditeur en ligne pour faire des séances de Live Coding" />
+    <meta property="og:description" content="Un éditeur en ligne pour faire des séances de Live Coding" />
     <meta property="og:image" content="https://trello-attachments.s3.amazonaws.com/5e20781f037cc18ba5bd3db7/104x131/7506b034ff68a0de1ac5334e5a7b0c9f/logo-okacode-lite-1.png" />
     <style type="text/css" media="screen">
         body {
@@ -24,6 +24,9 @@
             left: 0;
             right: 0;
             font-size: 1.8em;
+        }
+        .ace_hidden-cursors .ace_cursor {
+            opacity: 1;
         }
     </style>
 </head>
@@ -50,13 +53,12 @@
     <script src="//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://pagecdn.io/lib/ace/1.4.8/theme-ambiance.min.js" crossorigin="anonymous"></script>
 	<script>
-		function b64_to_utf8( str ) {
-		    return decodeURIComponent(escape(window.atob( str )));
+		function b64_to_utf8(str) {
+		    return decodeURIComponent(escape(window.atob(str)));
 		}
 	</script>
     <script>
         var editor = ace.edit("editor");
-        // editor.setTheme("ace/theme/ambiance");
         editor.getSession().setUseWorker(false);
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/html");
@@ -67,8 +69,11 @@
         .onSnapshot(function(res) {
             let snippet = res.data()
             editor.setValue(b64_to_utf8(snippet.code), 1)
-            editor.moveCursorTo(snippet.cursor.row, snippet.cursor.column+1, true)
-            editor.scrollToLine(snippet.cursor.row, true, true, null);
+            editor.session.setMode(snippet.mode);
+            if (snippet.cursor) {
+                editor.moveCursorTo(snippet.cursor.row, snippet.cursor.column, true)
+                editor.scrollToLine(snippet.cursor.row, true, true, null);
+            }
         });
     </script>
 </body>

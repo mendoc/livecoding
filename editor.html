@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset=utf-8 />
-	<title>Live Coding</title>
+	<title>Live Coding | Editor</title>
 	<script src="https://rawgithub.com/ajaxorg/ace-builds/master/src/ace.js"></script>
 	<script src="https://rawgithub.com/ajaxorg/ace-builds/master/src/ext-emmet.js"> </script>
 	<script src="https://rawgithub.com/nightwing/emmet-core/master/emmet.js"></script>
+    <meta name="description" content="Un éditeur en ligne pour faire des séances de Live Coding">
+    <meta name="author" content="Dimitri ONGOUA">
+    <link rel="icon" type="image/png" href="https://trello-attachments.s3.amazonaws.com/5e20781f037cc18ba5bd3db7/104x131/7506b034ff68a0de1ac5334e5a7b0c9f/logo-okacode-lite-1.png" sizes="32x32">
+    <meta property="og:title" content="Live Coding" />
+    <meta property="og:url" content="https://mendoc.github.io/livecoding" />
+    <meta property="og:description" content="Un éditeur en ligne pour faire des séances de Live Coding" />
+    <meta property="og:image" content="https://trello-attachments.s3.amazonaws.com/5e20781f037cc18ba5bd3db7/104x131/7506b034ff68a0de1ac5334e5a7b0c9f/logo-okacode-lite-1.png" />
 	<style type="text/css" media="screen">
 		body {
 			overflow: hidden;
 		}
-
 		#editor {
 			margin: 0;
 			position: absolute;
@@ -23,46 +28,47 @@
 		}
 	</style>
 </head>
-
 <body>
 	<pre id="editor"></pre>
 
-	<script src="https://pagecdn.io/lib/ace/1.4.8/theme-ambiance.min.js" crossorigin="anonymous"></script>
 	<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-firestore.js"></script>
 	<script>
 		// Your web app's Firebase configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyA-CI4WfGwW4M48MvQSTwO8oz3Njp8mGXw",
-        authDomain: "fir-test-146e0.firebaseapp.com",
-        databaseURL: "https://fir-test-146e0.firebaseio.com",
-        projectId: "fir-test-146e0",
-        storageBucket: "fir-test-146e0.appspot.com",
-        messagingSenderId: "947379455789",
-        appId: "1:947379455789:web:f01a35d3adf5f5e01235a4"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-	</script>
-	<script>
-    function updateSnippet(snippet) {
-        let db = firebase.firestore();
-        db.collection("coding").doc("snippet").set(snippet)
-        .catch(function(error) {
-            console.error("Error writing snippet: ", error);
-        });
-    }
-	</script>
-	<script>
-		function utf8_to_b64( str ) {
-		    return window.btoa(unescape(encodeURIComponent( str )));
+        var firebaseConfig = {
+            apiKey: "AIzaSyA-CI4WfGwW4M48MvQSTwO8oz3Njp8mGXw",
+            authDomain: "fir-test-146e0.firebaseapp.com",
+            databaseURL: "https://fir-test-146e0.firebaseio.com",
+            projectId: "fir-test-146e0",
+            storageBucket: "fir-test-146e0.appspot.com",
+            messagingSenderId: "947379455789",
+            appId: "1:947379455789:web:f01a35d3adf5f5e01235a4"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+	
+        function updateSnippet(snippet) {
+            let db = firebase.firestore();
+            db.collection("coding").doc("snippet").set(snippet)
+            .catch(function(error) {
+                console.error("Error writing snippet: ", error);
+            });
+        }
+        function updateCursor(cursor) {
+            let db = firebase.firestore();
+            db.collection("coding").doc("snippet").set(cursor, { merge: true })
+            .catch(function(error) {
+                console.error("Error writing snippet: ", error);
+            });
+        }
+		function utf8_to_b64(str) {
+		    return window.btoa(unescape(encodeURIComponent(str)));
 		}
-	</script>
-	<script>
+
 		editor = ace.edit("editor")
         editor.session.setMode("ace/mode/html")
-        editor.setTheme("ace/theme/ambiance");
-        var Emmet = require("ace/ext/emmet");
+        editor.setTheme("ace/theme/monokai");
+        let Emmet = require("ace/ext/emmet");
         editor.setOption("enableEmmet", true);
         
         editor.session.on('change', function(delta) {
@@ -73,7 +79,13 @@
             }
             updateSnippet(data)
         });
+
+        editor.session.selection.on('changeCursor', function(e) {
+            let data = {
+                cursor: editor.getCursorPosition()
+            }
+            updateCursor(data)
+        });
 	</script>
 </body>
-
 </html>
